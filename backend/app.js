@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 const { authenticateToken } = require('./utilities');
 
 mongoose.connect(config.connectionString)
@@ -14,19 +15,25 @@ mongoose.connect(config.connectionString)
 
 const User = require('./models/user.model');
 const Note = require('./models/note.model');
+// const UserAuthen = require('./routes/user_authen');
+// const NotesRoute = require('./routes/notes_routes');
 const PORT = process.env.PORT || 3000;
+const otpStore = {};
+const { sendOTP } = require('./functions/mailerSetup');
 
 
 const app = express();
-app.use(express.json());
 app.use(cors({ origin: "*" }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
     res.json({ data: "hello" });
 });
 
 // Create account route
-app.post("/create_account", async(req, res) => {
+app.post("/create_account", async (req, res) => {
     const { name, email, password } = req.body;
     console.log('Name: ', name);
     console.log('Email: ', email);
@@ -65,13 +72,7 @@ app.post("/create_account", async(req, res) => {
 // login route
 app.post('/login', async (req, res) => {
     try {
-        // console.log(`Req.body: ${req.body}`);
-        // console.log(JSON.stringify(req.body, null, 2));
-
         const { email, password } = req.body;
-        // console.log('Email: ', email);
-        // console.log('password: ', password);
-
         // Find user by email
         const userInfo = await User.findOne({ email: email });
         if (!userInfo) {
@@ -84,15 +85,14 @@ app.post('/login', async (req, res) => {
             return res.status(400).json({ error: true, message: "Invalid Credentials" });
         }
 
-        // Create a JWT token
-        const user = { user: userInfo };
-        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+        const otp = Math.floor(10000 + Math.random() * 90000).toString();
+        otpStore[email] = { otp, expiresAt: Date.now() + 10 * 60 * 1000 };
+        await sendOTP(email, otp);
 
         return res.json({
             error: false,
-            message: "Login Successful",
+            message: "OTP Send for 2FA",
             email,
-            accessToken
         });
     } catch (err) {
         console.error("Error during login:", err);
@@ -100,11 +100,40 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.post("/verify_otp", async (req, res) => {
+    const { otp, email } = req.body;
+    try {
+        // Find user by email
+        const userInfo = await User.findOne({ email: email });
+        if (!userInfo) {
+            return res.status(400).json({ error: true, message: "User Not Found!" });
+        }
+
+        if (otp === otpStore[email].otp) {
+            delete otpStore[email];
+            // Create a JWT token
+            const user = { user: userInfo };
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+
+            return res.json({
+                error: false,
+                message: "LoggedIn Successfully",
+                email,
+                accessToken
+            });
+        } else {
+            return res.json({ error: true, message: "Wrong OTP entered" });
+        }
+    } catch (error) {
+        return res.status(500).json({ error: true, message: "Server Error" });
+    }
+})
+
 // Get user details
 app.get("/get_user_details", authenticateToken, async (req, res) => {
     try {
         // Ensure the structure of req.user is correct as per your authenticateToken middleware
-        const { user } = req.user; 
+        const { user } = req.user;
 
         // Fetch user details from the database
         const userInfo = await User.findById(user._id);
@@ -266,27 +295,27 @@ app.put("/update_note_pinned/:noteId", authenticateToken, async (req, res) => {
 
 
 // search note
-app.get('/search_note', authenticateToken, async (req, res)=>{
-    const {user} = req.user;
-    const {query} = req.query;
+app.get('/search_note', authenticateToken, async (req, res) => {
+    const { user } = req.user;
+    const { query } = req.query;
 
-    if(!query){
-        return res.status(400).json({error: true, message: "Searched query is required"});
+    if (!query) {
+        return res.status(400).json({ error: true, message: "Searched query is required" });
     }
 
-    try{
+    try {
         const matchingNote = await Note.find({
             userId: user?._id,
             $or: [
-                { title: { $regex: new RegExp(query, "i")}},
-                { content: { $regex: new RegExp(query, "i")}},
+                { title: { $regex: new RegExp(query, "i") } },
+                { content: { $regex: new RegExp(query, "i") } },
             ],
         });
 
         return res.json({ error: false, notes: matchingNote, message: "Notes found!" });
 
-    }catch(error){
-        return res.status(500).json({ error:true, message: "Internal Server Error" });
+    } catch (error) {
+        return res.status(500).json({ error: true, message: "Internal Server Error" });
     }
 })
 

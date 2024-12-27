@@ -31,10 +31,9 @@ const Login = () => {
         password
       });
 
-      if (response.data && response.data.accessToken) {
-        localStorage.setItem("token", response.data.accessToken);
+      if (response.data) {
         toast.success(response.data.message);
-        navigate("/");
+        navigate("/verifyOtp", { state: { email } });
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Unexpected Error occurred during login");
