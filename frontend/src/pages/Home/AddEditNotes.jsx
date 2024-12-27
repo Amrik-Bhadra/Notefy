@@ -1,15 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TagInput from "../../Components/Pw_Input/TagInput";
 import { MdClose } from "react-icons/md";
 import toast from "react-hot-toast";
 import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import { FaMicrophone, FaMicrophoneSlash } from "react-icons/fa6";
+import { useSpeechToText } from "../../hooks/UseSpeechToText";
 
 const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
   const [title, setTitle] = useState(noteData?.title || "");
   const [content, setContent] = useState(noteData?.content || "");
   const [tags, setTags] = useState(noteData?.tags || []);
   // const [error, setError] = useState(null);
+
+  const contentDescription = useSpeechToText(noteData?.content || "");
+  // Sync speech-to-text updates with the content state
+  useEffect(() => {
+    setContent(contentDescription.value);
+  }, [contentDescription.value]);
 
   const navigate = useNavigate();
 
@@ -44,7 +52,7 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
       if (response?.data && response?.data?.note) {
         getAllNotes();
         onClose();
-        navigate('/')
+        navigate("/");
         toast.success("Note Updated Successfully!");
       }
     } catch (error) {
@@ -90,14 +98,30 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
       </div>
 
       <div className="flex flex-col gap-2 mt-4">
-        <label className="input-label text-white">Content</label>
+        <div className="flex justify-between items-center">
+          <label className="input-label text-white">Content</label>
+          <button
+            className="text-white pr-2"
+            onClick={contentDescription.toggleListening}
+          >
+            {contentDescription.isListening ? (
+              <FaMicrophoneSlash size={16} />
+            ) : (
+              <FaMicrophone size={16} />
+            )}
+          </button>
+        </div>
         <textarea
           type="text"
           className="text-sm text-white outline-none bg-formInput p-2 rounded"
-          placeholder=""
+          placeholder="Start typing or use the microphone"
           rows={10}
           value={content}
-          onChange={({ target }) => setContent(target.value)}
+          onChange={(e) => {
+            const inputValue = e.target.value;
+            setContent(inputValue); // Update the content state
+            contentDescription.setValue(inputValue); // Sync with speech-to-text
+          }}
         ></textarea>
       </div>
 
@@ -112,7 +136,7 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
         className="btn-primary font-medium mt-5 p-3"
         onClick={handleAddNote}
       >
-        { (type === 'edit') ? "Update" : "Add" }
+        {type === "edit" ? "Update" : "Add"}
       </button>
     </div>
   );
