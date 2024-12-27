@@ -32,18 +32,18 @@ const TagInput = ({ tags, setTags }) => {
         <input
           type="text"
           value={inputValue}
-          className="text-sm bg-transparent border py-2 px-3 rounded outline-none"
+          className="text-sm bg-formInput py-2 px-3 rounded outline-none placeholder:text-[#eee]"
           placeholder="Add Tags"
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
         />
         <button
-          className="w-8 h-8 flex items-center justify-center rounded border border-blue-700 hover:bg-blue-700"
+          className="w-8 h-8 flex items-center justify-center rounded-full border-2 border-[#00afb9]  hover:bg-white hover:border-none"
           onClick={() => {
             addNewTag();
           }}
         >
-          <MdAdd className="text-2xl text-blue-700 hover:text-white" />
+          <MdAdd className="text-2xl text-primary hover:text-[#333]" />
         </button>
       </div>
 

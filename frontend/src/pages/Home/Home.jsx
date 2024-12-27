@@ -136,20 +136,20 @@ const Home = () => {
 
       {/* button to open add edit note */}
       <button
-        className="w-16 h-16 flex items-center justify-center rounded-full bg-primary hover:bg-blue-600 absolute right-10 bottom-10 drop-shadow-md"
+        className="w-16 h-16 flex items-center justify-center rounded-full bg-primary hover:text-[#333] hover:bg-white absolute right-10 bottom-10 drop-shadow-md"
         onClick={() => {
           setOpenAddEditModal({ isShown: true, type: "add", data: null });
         }}
       >
-        <MdAdd className="text-[32px] text-white" />
+        <MdAdd className="text-[32px] text-white hover:text-[#333]" />
       </button>
 
       <Modal
         isOpen={openAddEditModal.isShown}
         onRequestClose={() => {}}
-        style={{ overlay: { background: "rgba(0,0,0,0.2)" } }}
+        style={{ overlay: { background: "rgba(0,0,0,0.6)" } }}
         contentLabel=""
-        className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5"
+        className="w-[40%] max-h-3/4 bg-cardbg rounded-md mx-auto mt-20 p-5"
       >
         <AddEditNotes
           type={openAddEditModal.type}

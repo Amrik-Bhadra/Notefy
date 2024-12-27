@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { validateEmail } from "../../utils/helper";
 import toast from "react-hot-toast";
 import axiosInstance from "../../utils/axiosInstance";
+import logo from '../../assets/notefy_logo.png'
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -24,10 +25,7 @@ const Login = () => {
     }
 
     //login api
-    try {
-
-      console.log(email);
-      
+    try {      
       const response = await axiosInstance.post("/login", {
         email,
         password
@@ -46,9 +44,13 @@ const Login = () => {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="flex items-center justify-center">
-        <div className="w-96 border rounded bg-white px-7 py-10">
+        <div className="bg-cardbg outline-none w-96 rounded px-10 py-10">
+          <div className="flex justify-center items-center gap-x-2 mb-6">
+            <img src={logo} alt="" className="h-[2rem]"/>
+            <h1 className="font-semibold text-xl text-white">Notefy</h1>
+          </div>
           <form onSubmit={handleLogin}>
-            <h4 className="text-2xl mb-7 text-center">Login</h4>
+            <h4 className="text-2xl mb-7 text-center text-white">Login</h4>
 
             {/* email input */}
             <input
@@ -66,13 +68,13 @@ const Login = () => {
               placeholder="Password"
             />
 
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary mt-3">
               Login
             </button>
-            <p className="text-sm text-center mt-4">
-              Not Registered Yet?{" "}
+            <p className="text-sm text-center mt-4 text-white flex gap-x-2 justify-center">
+              <span>Don't Have Account?{" "}</span>
               <Link to="/signup" className="font-medium text-primary underline">
-                Create an Account
+                SignUp
               </Link>
             </p>
           </form>

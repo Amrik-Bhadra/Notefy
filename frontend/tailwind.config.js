@@ -8,9 +8,12 @@ export default {
     extend: {
       // colors
       colors:{
-        primary: "#2B85FF",
+        primary: "#00afb9",
         secondary: "#EF863E",
-        error: "#FF0000"
+        error: "#FF0000",
+        mainbg: "#464646",
+        cardbg: "#333",
+        formInput: "#414141"
       }
     },
   },

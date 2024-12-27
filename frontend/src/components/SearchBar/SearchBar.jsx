@@ -11,7 +11,7 @@ const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
 
   return (
     <div
-      className={`flex items-center border rounded px-3 py-1 transition-all duration-300 bg-slate-100 ${
+      className={`flex items-center rounded px-3 py-1 transition-all duration-300 bg-[#414141] ${
         isOpen ? "w-full max-w-md" : "w-10"
       }`}
     >
@@ -22,7 +22,7 @@ const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
           value={value}
           onChange={onChange}
           placeholder="Search"
-          className="flex-grow text-sm py-[5px] font-normal bg-transparent outline-none placeholder:font-normal"
+          className="flex-grow text-sm py-[5px] font-normal bg-transparent outline-none placeholder:font-normal placeholder:text-[#eee]"
         />
       )}
 
@@ -30,12 +30,12 @@ const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
       { (value !== '') ? (
         <IoMdClose
           size={16}
-          className="text-slate-400 cursor-pointer hover:text-black"
+          className="text-[#eee] cursor-pointer hover:text-black"
           onClick={onClearSearch} // Calls onClearSearch to clear the search input
         />
       ) : (<FaSearch
         size={16}
-        className="text-slate-400 cursor-pointer hover:text-black"
+        className="text-[#eee] cursor-pointer hover:text-black"
         onClick={() => {
           if (isOpen) handleSearch(); // Executes the search function when open
           toggleSearchBar(); // Toggles the search bar visibility

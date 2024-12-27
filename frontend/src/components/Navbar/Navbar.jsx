@@ -20,8 +20,8 @@ const Navbar = ({userInfo, onSearch}) => {
   }
 
   return (
-    <div className="bg-white flex items-center justify-between px-16 py-2 drop-shadow">
-      <h2 className="text-xl font-medium text-black py-2 flex items-center gap-x-2">
+    <div className="bg-cardbg flex items-center justify-between px-16 py-2 drop-shadow">
+      <h2 className="text-xl font-medium py-2 flex items-center gap-x-2 text-white">
         <img src={logo} alt="" className="h-[2rem]"/>
         Notefy</h2>
       <div className="flex items-center gap-x-6">

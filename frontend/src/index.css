@@ -10,16 +10,16 @@
     }
 
     body{
-        background-color: #f6f6f6;
+        background-color: #212121;
         overflow-x: hidden;
     }
 }
 
 @layer components{
     .input-box{
-        @apply w-full text-sm bg-transparent border-[1.5px] px-5 py-3 mb-4 rounded outline-none;
+        @apply w-full text-sm bg-formInput text-white px-5 py-3 mb-4 rounded outline-none placeholder:text-[#eee];
     }
     .btn-primary{
-        @apply w-full text-sm bg-primary text-white p-2 rounded my-1 hover:bg-blue-600; 
+        @apply w-full text-sm bg-primary text-white p-2 rounded my-1; 
     }
 }
